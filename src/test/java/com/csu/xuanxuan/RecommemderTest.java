@@ -49,12 +49,12 @@ public class RecommemderTest {
         mapDriver.withInput(new LongWritable(), text)
                 .withOutput(new IntWritable(0), new Text("1,1"))
                 .withOutput(new IntWritable(1), new Text("2,3"))
-                .withOutput(new IntWritable(3), new Text("1,1"))
+                .withOutput(new IntWritable(3), new Text("2,1"))
                 .withOutput(new IntWritable(1), new Text("2,5"))
-                .withOutput(new IntWritable(5), new Text("1,1"))
+                .withOutput(new IntWritable(5), new Text("2,1"))
                 .withOutput(new IntWritable(0), new Text("1,3"))
                 .withOutput(new IntWritable(3), new Text("2,5"))
-                .withOutput(new IntWritable(5), new Text("1,3"))
+                .withOutput(new IntWritable(5), new Text("2,3"))
                 .withOutput(new IntWritable(0), new Text("1,5"))
                 .runTest();
     }
@@ -90,9 +90,9 @@ public class RecommemderTest {
         //创建测试数据
         List<Pair<LongWritable, Text>> list = new ArrayList<>();
         Text text1 = new Text("0\t1");
-        Text text2 = new Text("1\t2,3");
-        Text text3 = new Text("2\t0,1,3");
-        Text text4 = new Text("3\t0,1,2");
+        Text text2 = new Text("1\t0,2,3");
+        Text text3 = new Text("2\t1,3");
+        Text text4 = new Text("3\t1,2");
         list.add(new Pair(new LongWritable(0), text1));
         list.add(new Pair(new LongWritable(1), text2));
         list.add(new Pair(new LongWritable(2), text3));
@@ -100,8 +100,8 @@ public class RecommemderTest {
         mapReduceDriver.withAll(list)
                 .withOutput(new IntWritable(0), new Text("2,3"))
                 .withOutput(new IntWritable(1), new Text(""))
-                .withOutput(new IntWritable(2), new Text(""))
-                .withOutput(new IntWritable(3), new Text(""))
+                .withOutput(new IntWritable(2), new Text("0"))
+                .withOutput(new IntWritable(3), new Text("0"))
                 .runTest();
     }
 }

@@ -32,17 +32,13 @@ public class Recommemder {
             for (String item : userAndFriends[1].split(",")) {
                 friends.add(new IntWritable(Integer.parseInt(item)));
             }
-            Text friend1Value = new Text();
-            Text friend2Value = new Text();
             int index = 0;
             for (IntWritable friend1 : friends) {
-                friend1Value.set("1," + friend1);
-                context.write(userId, friend1Value);
+                context.write(userId, new Text("1," + friend1));
                 ++index;
                 for (IntWritable friend2 : friends.subList(index, friends.size())) {
-                    friend2Value.set("2," + friend2);
-                    context.write(friend1, friend2Value);
-                    context.write(friend2, friend1Value);
+                    context.write(friend1, new Text("2," + friend2));
+                    context.write(friend2, new Text("2," + friend1));
                 }
             }
         }
@@ -80,9 +76,9 @@ public class Recommemder {
                     if (o1.getValue() == o2.getValue()) {
                         return 0;
                     } else if (o1.getValue() > o2.getValue()) {
-                        return 1;
-                    } else {
                         return -1;
+                    } else {
+                        return 1;
                     }
                 }
             });
