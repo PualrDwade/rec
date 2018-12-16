@@ -1,0 +1,2 @@
+# MapReduce编程模型实现二度人脉好友推荐
+使用hadoop的mapreduce框架实现了好友推荐,源码提供参考
