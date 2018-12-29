@@ -20,6 +20,7 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 public class Recommemder {
     public static class Map extends Mapper<LongWritable, Text, IntWritable, Text> {
+       
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             String line = value.toString();
@@ -27,31 +28,37 @@ public class Recommemder {
             if (userAndFriends.length != 2) {
                 return;
             }
+            
             IntWritable userId = new IntWritable(Integer.parseInt(userAndFriends[0]));
             List<IntWritable> friends = new ArrayList<>();
             for (String item : userAndFriends[1].split(",")) {
                 friends.add(new IntWritable(Integer.parseInt(item)));
             }
+            
             int index = 0;
             for (IntWritable friend1 : friends) {
                 context.write(userId, new Text("1," + friend1));
                 ++index;
+                
                 for (IntWritable friend2 : friends.subList(index, friends.size())) {
                     context.write(friend1, new Text("2," + friend2));
                     context.write(friend2, new Text("2," + friend1));
                 }
-            }
+            } 
         }
     }
 
     public static class Reduce extends Reducer<IntWritable, Text, IntWritable, Text> {
+        
         @Override
         public void reduce(IntWritable key, Iterable<Text> values, Context context)
                 throws IOException, InterruptedException {
             String[] value;
             HashMap<String, Integer> commonMap = new HashMap<>();
+            
             for (Text val : values) {
                 value = val.toString().split(",");
+                
                 if (value[0].equals("1")) {
                     commonMap.put(value[1], -1);
                 } else {
@@ -64,12 +71,14 @@ public class Recommemder {
                     }
                 }
             }
+            
             ArrayList<Entry<String, Integer>> commonList = new ArrayList<>();
             for (Entry<String, Integer> entry : commonMap.entrySet()) {
                 if (entry.getValue() != -1) {
                     commonList.add(entry);
                 }
             }
+            
             Collections.sort(commonList, new Comparator<Entry<String, Integer>>() {
                 @Override
                 public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
@@ -82,11 +91,13 @@ public class Recommemder {
                     }
                 }
             });
+            
             final int MAX_RECOMMENDATION_COUNT = 10;
             List<String> top = new ArrayList<>();
             for (int i = 0; i < Math.min(MAX_RECOMMENDATION_COUNT, commonList.size()); ++i) {
                 top.add(commonList.get(i).getKey());
             }
+            
             context.write(key, new Text(StringUtils.join(top, ",")));
         }
     }
