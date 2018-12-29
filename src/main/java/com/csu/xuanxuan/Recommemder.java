@@ -58,7 +58,6 @@ public class Recommemder {
             
             for (Text val : values) {
                 value = val.toString().split(",");
-                
                 if (value[0].equals("1")) {
                     commonMap.put(value[1], -1);
                 } else {
